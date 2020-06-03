@@ -170,7 +170,12 @@ class Connection(Protocol):
         d_buff = b''
         try:
             self._socket.settimeout(timeout)
-            d_buff += self._socket.recv(length)
+            #d_buff += self._socket.recv(length)
+            d_buff += self._socket.recv(5)
+            msg_type, _msg_id, data_len = struct.unpack('!BHH', d_buff)
+            if not msg_type in (self.MSG_RSP, self.MSG_PING):
+            d_buff += self._socket.recv(data_len)  
+        
             if len(d_buff) >= length:
                 d_buff = d_buff[:length]
             return d_buff
